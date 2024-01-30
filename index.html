@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To-do List</title>
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="todo-app">
+        <h2>To-Do List <img src="images/icon.png" alt="" /></h2>
+
+        <div class="row">
+          <input
+            type="text"
+            id="input-box"
+            onkeypress="handleKeyPress()"
+            placeholder="Add your list" />
+          <button onclick="addTask()">Add</button>
+        </div>
+
+        <div class="progressBar-container">
+          <div class="progressBar" id="progressBar"></div>
+        </div>
+
+        <ul id="list-container"></ul>
+      </div>
+    </div>
+
+    <script>
+      const inputBox = document.getElementById("input-box");
+      const listContainer = document.getElementById("list-container");
+
+      function addTask() {
+        if (inputBox.value === "") {
+          alert("Please enter a task");
+        } else {
+          let li = document.createElement("li");
+          li.innerHTML = inputBox.value;
+          listContainer.appendChild(li);
+          let span = document.createElement("span");
+          span.innerHTML = "\u00d7";
+          li.appendChild(span);
+
+          updateProgressBar();
+        }
+
+        inputBox.value = "";
+        saveData();
+      }
+
+      listContainer.addEventListener(
+        "click",
+        function (e) {
+          if (e.target.tagName === "LI") {
+            e.target.classList.toggle("checked");
+            saveData();
+            updateProgressBar();
+          } else if (e.target.tagName === "SPAN") {
+            e.target.parentElement.remove();
+            saveData();
+            updateProgressBar();
+          }
+        },
+        false
+      );
+
+      function updateProgressBar() {
+        const totalTasks =
+          document.querySelectorAll("#list-container li").length;
+        const progressBarContainer = document.querySelector(
+          ".progressBar-container"
+        );
+
+        if (totalTasks > 0) {
+          progressBarContainer.style.display = "block";
+
+          const completedTasks = document.querySelectorAll(
+            "#list-container li.checked"
+          ).length;
+          const progressBar = document.getElementById("progressBar");
+          const progressPercentage = (completedTasks / totalTasks) * 100;
+
+          progressBar.style.width = `${progressPercentage}%`;
+
+          if (progressPercentage >= 0 && progressPercentage <= 34) {
+            progressBar.style.background =
+              "linear-gradient(135deg, #c10404, #eee200)";
+          } else if (progressPercentage >= 35 && progressPercentage <= 67) {
+            progressBar.style.background =
+              "linear-gradient(135deg, #c10404, #eee200)";
+          } else {
+            progressBar.style.background =
+              "linear-gradient(135deg, #c10404, #eee200 , #4caf50)";
+          }
+        } else {
+          progressBarContainer.style.display = "none";
+        }
+      }
+
+      function saveData() {
+        localStorage.setItem("data", listContainer.innerHTML);
+      }
+
+      function showTask() {
+        listContainer.innerHTML = localStorage.getItem("data");
+      }
+
+      showTask();
+      updateProgressBar();
+
+      function handleKeyPress() {
+        if (event.key == "Enter") {
+          addTask();
+        }
+      }
+    </script>
+  </body>
+</html>
